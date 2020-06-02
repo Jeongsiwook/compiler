@@ -159,17 +159,49 @@ class Loop extends Statement {
 	}
 }
 
-class Print extends Statement{
-	// Print = IntValue | FloatValue | Variable
-	
+
+abstract class Print extends Statement{
+	public DefaultMutableTreeNode makeNode() {
+		DefaultMutableTreeNode newNode = new DefaultMutableTreeNode();
+		return newNode;
+	}
 }
 
-class PrintCh extends Statement{
-	// PrintCh = CharValue | Variable
+class PrintInt extends Print{
+	// PrintInt = IntValue
+	private IntValue v;
+	
+	PrintInt (Value t){
+		t = v;
+	}
 }
 
-abstract class Print{
+class PrintFloat extends Print{
+	// PrintFloat = FloatValue
+	private FloatValue v;
 	
+	PrintFloat (Value t){
+		t = v;
+	}
+}
+
+class PrintCh extends Print{
+	// PrintCh = CharValue
+	private CharValue v;
+	
+	PrintCh (Value t){
+		t = v;
+	}
+}
+
+class PrintVar extends Print{
+	// PrintVar = Variable
+	private Variable v;
+	
+	PrintVar (Variable t){
+		t = v;
+	}
+
 }
 
 abstract class Expression {

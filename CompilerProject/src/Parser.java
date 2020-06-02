@@ -125,7 +125,7 @@ public class Parser {
         } else if (token.type().equals(TokenType.While)) {
         	s = whileStatement();
         } else if (token.type().equals(TokenType.Print)) {
-            	s = printStatement();
+            s = printStatement();
         } else if (token.type().equals(TokenType.PrintCh)) {
         	s = printChStatement();
         }	else {
@@ -180,16 +180,50 @@ public class Parser {
     	return new Loop(e, s);
     }
     
-    private Print printStatement () {
+    private Print printStatement() {
         // PrintStatement --> print [IntLiteral | FloatLiteral | Identifier];
     	match(TokenType.Print);
-    	return new Print(e, s);
+        Variable t = null;
+        Print p = null;
+        if (token.type().equals(TokenType.Identifier)) {
+            t = new Variable(match(TokenType.Identifier));
+            p = new PrintVar(t);
+        } else if (isLiteral()) {
+        	Value v = null;
+        	if (token.type().equals(TokenType.IntLiteral)) {
+        		p = new PrintInt(v);
+        		
+        	}
+        	else if (token.type().equals(TokenType.FloatLiteral)) {
+        		p = new PrintFloat(v);
+        	} 
+        	else {
+        		error ("Literal Error");
+        	}
+        }
+        return p;
     }
     
-    private PrintCh printChStatement () {
+    private Print printChStatement () {
         // PrintChStatement --> printCh [CharLiteral | Identifier];
     	match(TokenType.PrintCh);
-    	return new PrintCh(e, s);
+        Variable t = null;
+        Print p = null;
+        if (token.type().equals(TokenType.Identifier)) {
+            t = new Variable(match(TokenType.Identifier));
+            p = new PrintVar(t);
+        }
+        else if (isLiteral()) {
+        	Value v = null;
+        	if (token.type().equals(TokenType.CharLiteral)) {
+        		p = new PrintCh(v);
+        		
+        	}
+        	else {
+        		error ("Literal Error");
+        	}
+        }
+        return p;
     }
 
 
