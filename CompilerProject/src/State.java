@@ -6,8 +6,7 @@ import syntax.expression.Variable;
 import syntax.value.Value;
 
 
-
-@SuppressWarnings("serial")
+// State
 public class State extends HashMap<Variable, Value> {
 	public State() {
 		super();
