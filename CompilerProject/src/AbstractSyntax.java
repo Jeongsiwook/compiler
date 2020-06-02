@@ -76,7 +76,7 @@ class Type {
 }
 
 abstract class Statement {
-    // Statement = Skip | Block | Assignment | Conditional | Loop
+    // Statement = Skip | Block | Assignment | Conditional | Loop | Print | PrintCh
 	public DefaultMutableTreeNode makeNode() {
 		DefaultMutableTreeNode newNode = new DefaultMutableTreeNode("Statement: ");
 		return newNode;

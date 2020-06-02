@@ -182,22 +182,14 @@ public class Parser {
     
     private Print printStatement () {
         // PrintStatement --> print [IntLiteral | FloatLiteral | Identifier];
-    	match(TokenType.While);
-        match(TokenType.LeftParen);
-        Expression e = expression();
-        match(TokenType.RightParen);
-    	Statement s = statement();
-    	return new Loop(e, s);
+    	match(TokenType.Print);
+    	return new Print(e, s);
     }
     
     private PrintCh printChStatement () {
         // PrintChStatement --> printCh [CharLiteral | Identifier];
-    	match(TokenType.While);
-        match(TokenType.LeftParen);
-        Expression e = expression();
-        match(TokenType.RightParen);
-    	Statement s = statement();
-    	return new Loop(e, s);
+    	match(TokenType.PrintCh);
+    	return new PrintCh(e, s);
     }
 
 
