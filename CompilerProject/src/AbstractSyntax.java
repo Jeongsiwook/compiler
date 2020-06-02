@@ -76,7 +76,7 @@ class Type {
 }
 
 abstract class Statement {
-    // Statement = Skip | Block | Assignment | Conditional | Loop | Print | PrintCh
+    // Statement = Skip | Block | Assignment | Conditional | Loop
 	public DefaultMutableTreeNode makeNode() {
 		DefaultMutableTreeNode newNode = new DefaultMutableTreeNode("Statement: ");
 		return newNode;
@@ -139,6 +139,8 @@ class Conditional extends Statement {
 		ifNode.add(elsebranch.makeNode());
 		return ifNode;
 	}
+
+    
 }
 
 class Loop extends Statement {
@@ -155,6 +157,19 @@ class Loop extends Statement {
 		whileNode.add(body.makeNode());
 		return whileNode;
 	}
+}
+
+class Print extends Statement{
+	// Print = IntValue | FloatValue | Variable
+	
+}
+
+class PrintCh extends Statement{
+	// PrintCh = CharValue | Variable
+}
+
+abstract class Print{
+	
 }
 
 abstract class Expression {
@@ -364,6 +379,7 @@ class Unary extends Expression {
 		return UnaryNode;
 	}
 }
+
 
 class Operator {
     // Operator = BooleanOp | RelationalOp | ArithmeticOp | UnaryOp
