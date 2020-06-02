@@ -14,6 +14,8 @@ public class Token {
     public static final Token ifTok = new Token(TokenType.If, "if");
     public static final Token intTok = new Token(TokenType.Int, "int");
     public static final Token mainTok = new Token(TokenType.Main, "main");
+    public static final Token printTok = new Token(TokenType.Print, "print");
+    public static final Token printChTok = new Token(TokenType.PrintCh, "printCh");
     public static final Token trueTok = new Token(TokenType.True, "true");
     public static final Token whileTok = new Token(TokenType.While, "while");
     public static final Token leftBraceTok = new Token(TokenType.LeftBrace, "{");

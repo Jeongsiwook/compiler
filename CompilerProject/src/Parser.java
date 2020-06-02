@@ -108,7 +108,7 @@ public class Parser {
     }
   
     private Statement statement() {
-        // Statement --> ; | Block | Assignment | IfStatement | WhileStatement
+        // Statement --> ; | Block | Assignment | IfStatement | WhileStatement | PrintStatement | PrintChStatement
         Statement s = new Skip();
         // student exercise
         if (token.type().equals(TokenType.Semicolon)) {
@@ -124,7 +124,11 @@ public class Parser {
         	s = ifStatement();
         } else if (token.type().equals(TokenType.While)) {
         	s = whileStatement();
-        } else {
+        } else if (token.type().equals(TokenType.Print)) {
+            	s = printStatement();
+        } else if (token.type().equals(TokenType.PrintCh)) {
+        	s = printChStatement();
+        }	else {
         	error(token.type());
         }
         return s;
@@ -175,6 +179,28 @@ public class Parser {
     	Statement s = statement();
     	return new Loop(e, s);
     }
+    
+    private Print printStatement () {
+        // PrintStatement --> print [IntLiteral | FloatLiteral | Identifier];
+    	match(TokenType.While);
+        match(TokenType.LeftParen);
+        Expression e = expression();
+        match(TokenType.RightParen);
+    	Statement s = statement();
+    	return new Loop(e, s);
+    }
+    
+    private PrintCh printChStatement () {
+        // PrintChStatement --> printCh [CharLiteral | Identifier];
+    	match(TokenType.While);
+        match(TokenType.LeftParen);
+        Expression e = expression();
+        match(TokenType.RightParen);
+    	Statement s = statement();
+    	return new Loop(e, s);
+    }
+
+
 
     private Expression expression () {
         // Expression --> Conjunction { || Conjunction }
@@ -350,6 +376,8 @@ public class Parser {
     
     private boolean isStatement( ) { // Statement인지 확인하는 함수
     	return (token.type().equals(TokenType.Semicolon) ||
+    			token.type().equals(TokenType.Print) ||
+    			token.type().equals(TokenType.PrintCh) ||
     			token.type().equals(TokenType.If) ||
     			token.type().equals(TokenType.While) ||
     			token.type().equals(TokenType.LeftBrace) ||

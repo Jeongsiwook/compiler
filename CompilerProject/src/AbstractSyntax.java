@@ -139,8 +139,6 @@ class Conditional extends Statement {
 		ifNode.add(elsebranch.makeNode());
 		return ifNode;
 	}
-
-    
 }
 
 class Loop extends Statement {
