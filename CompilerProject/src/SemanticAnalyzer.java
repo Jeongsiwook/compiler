@@ -173,6 +173,45 @@ public class SemanticAnalyzer {
 			}
 			return;
 		}
+        // Print Valid Rule Àû¿ë
+        if (s instanceof Print) {
+        	if (s instanceof PrintInt) {
+            	PrintInt p = (PrintInt) s;
+            	V(p.v, tm);            	
+            	return;
+            }
+        	else if (s instanceof PrintFloat) {
+        		PrintFloat p = (PrintFloat) s;
+        		V(p.v, tm);
+        		return;
+        	}
+        	else if (s instanceof PrintCh) {
+        		PrintCh p = (PrintCh) s;
+        		V(p.v, tm);
+        		Type ttype = typeOf(p.v, tm);
+        		if (ttype == Type.CHAR) {
+        			return;
+        		}
+        		else {
+            		check(false, "type error for print if: " + p.v);
+            	}        		
+        	}
+        	else if (s instanceof PrintVar) {
+        		PrintVar p = (PrintVar) s;
+        		V(p.v, tm);
+        		Type ttype = typeOf(p.v, tm);
+            	if (ttype == Type.INT) {
+            		return;
+            	} else if (ttype == Type.FLOAT) {
+            		return;
+            	} else {
+            		check(false, "type error for print if: " + p.v);
+            	}        		
+        	} else {
+        		check(false, "type error");
+        	}
+        }       
+        
         throw new IllegalArgumentException("should never reach here");
     }
 
