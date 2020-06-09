@@ -20,7 +20,7 @@ public class Interpreter {
   
   
     State M (Statement s, State state) {
-        // Statement = Skip | Block | Assigment | Loop | Conditional
+        // Statement = Skip | Block | Assignment | Loop | Conditional
         if (s instanceof Skip) return M((Skip)s, state);
         if (s instanceof Assignment)  return M((Assignment)s, state);
         if (s instanceof Conditional)  return M((Conditional)s, state);
@@ -35,7 +35,7 @@ public class Interpreter {
     }
   
     State M (Assignment a, State state) {
-        // Assigment = Variable target; Expression source
+        // Assignment = Variable target; Expression source
         return state.onion(a.target, M (a.source, state));
     }
   
@@ -64,7 +64,7 @@ public class Interpreter {
     }
 
     Value M (Expression e, State state) {
-        // Expression = Variable | Value | Binaray | Unary
+        // Expression = Variable | Value | Binary | Unary
         if (e instanceof Value) 
             return (Value)e;
         if (e instanceof Variable) 
@@ -99,7 +99,7 @@ public class Interpreter {
     	}
     	if (p instanceof PrintVar) {
     		PrintVar var = (PrintVar)p;
-    		System.out.println(state.get(var.v));
+    		System.out.println(state.get(var.e));
         	return state; 
     	}
         throw new IllegalArgumentException("should never reach here");
@@ -113,78 +113,123 @@ public class Interpreter {
     	
         SemanticAnalyzer.check( ! v1.isUndef( ) && ! v2.isUndef( ),
                 "reference to undef value");
-
-        // INT 사칙연산
-        if (op.val.equals(Operator.INT_PLUS)) 
-            return new IntValue(v1.intValue( ) + v2.intValue( ));
-        if (op.val.equals(Operator.INT_MINUS)) 
-            return new IntValue(v1.intValue( ) - v2.intValue( ));
-        if (op.val.equals(Operator.INT_TIMES)) 
-            return new IntValue(v1.intValue( ) * v2.intValue( ));
-        if (op.val.equals(Operator.INT_DIV)) 
-            return new IntValue(v1.intValue( ) / v2.intValue( ));
-        
-        // FLOAT 사칙연산
-        if (op.val.equals(Operator.FLOAT_PLUS)) 
-            return new FloatValue(v1.floatValue( ) + v2.floatValue( ));
-        if (op.val.equals(Operator.FLOAT_MINUS)) 
-            return new FloatValue(v1.floatValue( ) - v2.floatValue( ));
-        if (op.val.equals(Operator.FLOAT_TIMES)) 
-            return new FloatValue(v1.floatValue( ) * v2.floatValue( ));
-        if (op.val.equals(Operator.FLOAT_DIV)) 
-            return new FloatValue(v1.floatValue( ) / v2.floatValue( ));
-        
-        // INT 비교연산
-        if (op.val.equals(Operator.INT_LT))
-            return new BoolValue(v1.intValue( ) < v2.intValue( ));
-        if (op.val.equals(Operator.INT_LE))
-            return new BoolValue(v1.intValue( ) <= v2.intValue( ));
-        if (op.val.equals(Operator.INT_EQ))
-            return new BoolValue(v1.intValue( ) == v2.intValue( ));
-        if (op.val.equals(Operator.INT_NE))
-            return new BoolValue(v1.intValue( ) != v2.intValue( ));
-        if (op.val.equals(Operator.INT_GT))
-            return new BoolValue(v1.intValue( ) > v2.intValue( ));
-        if (op.val.equals(Operator.INT_GE))
-            return new BoolValue(v1.intValue( ) >= v2.intValue( ));
-
-        // FLOAT 비교연산
-        if (op.val.equals(Operator.FLOAT_LT))
-            return new BoolValue(v1.floatValue( ) <  v2.floatValue( ));
-        if (op.val.equals(Operator.FLOAT_LE))
-            return new BoolValue(v1.floatValue( ) <= v2.floatValue( ));
-        if (op.val.equals(Operator.FLOAT_EQ))
-            return new BoolValue(v1.floatValue( ) == v2.floatValue( ));
-        if (op.val.equals(Operator.FLOAT_NE))
-            return new BoolValue(v1.floatValue( ) != v2.floatValue( ));
-        if (op.val.equals(Operator.FLOAT_GT))
-            return new BoolValue(v1.floatValue( ) >  v2.floatValue( ));
-        if (op.val.equals(Operator.FLOAT_GE))
-            return new BoolValue(v1.floatValue( ) >= v2.floatValue( ));
-
-        // CHAR 비교연산
-        if (op.val.equals(Operator.CHAR_LT))
-            return new BoolValue(v1.charValue( ) <  v2.charValue( ));
-        if (op.val.equals(Operator.CHAR_LE))
-            return new BoolValue(v1.charValue( ) <= v2.charValue( ));
-        if (op.val.equals(Operator.CHAR_EQ))
-            return new BoolValue(v1.charValue( ) == v2.charValue( ));
-        if (op.val.equals(Operator.CHAR_NE))
-            return new BoolValue(v1.charValue( ) != v2.charValue( ));
-        if (op.val.equals(Operator.CHAR_GT))
-            return new BoolValue(v1.charValue( ) >  v2.charValue( ));
-        if (op.val.equals(Operator.CHAR_GE))
-            return new BoolValue(v1.charValue( ) >= v2.charValue( ));
-
-        // BOOL 비교연산
-        if (op.val.equals(Operator.BOOL_EQ))
-            return new BoolValue(v1.boolValue( ) == v2.boolValue( ));
-        if (op.val.equals(Operator.BOOL_NE))
-            return new BoolValue(v1.boolValue( ) != v2.boolValue( ));
-        if (op.val.equals(Operator.AND))
-            return new BoolValue(v1.boolValue( ) && v2.boolValue( ));
-        if (op.val.equals(Operator.OR))
-            return new BoolValue(v1.boolValue( ) || v2.boolValue( ));
+        //+, -, *, /
+      	if (op.ArithmeticOp()) {
+      		if (v1.type() == Type.INT && v1.type() == Type.INT) {
+      				if (op.val.equals(Operator.PLUS))
+      					return new IntValue(v1.intValue() + v2.intValue());
+      				if (op.val.equals(Operator.MINUS))
+      					return new IntValue(v1.intValue() - v2.intValue());
+      				if (op.val.equals(Operator.TIMES))
+      					return new IntValue(v1.intValue() * v2.intValue());
+      				if (op.val.equals(Operator.DIV))
+      					return new IntValue(v1.intValue() / v2.intValue());
+      		}
+      		// float (+, -, *,/) float 
+      		 else if(v1.type() == Type.FLOAT && v2.type() == Type.FLOAT) {
+      				if (op.val.equals(Operator.PLUS))
+      					return new FloatValue(v1.floatValue() + v2.floatValue());
+      				if (op.val.equals(Operator.MINUS))
+      					return new FloatValue(v1.floatValue() - v2.floatValue());
+      				if (op.val.equals(Operator.TIMES))
+      					return new FloatValue(v1.floatValue() * v2.floatValue());
+      				if (op.val.equals(Operator.DIV))
+      					return new FloatValue(v1.floatValue() / v2.floatValue());
+      		}
+	      		// 두 개의 타입이 다른 타입일때 캐스팅 후 다시 진행
+      		else if((v1.type() == Type.INT && v2.type() == Type.FLOAT) ||
+      				(v1.type() == Type.FLOAT && v2.type() == Type.INT)) {
+      				if(v1.type() == Type.INT)
+      					v1 = new FloatValue((float)v1.intValue());
+      				else if(v2.type() == Type.INT)
+      					v2 = new FloatValue((float)v2.intValue());
+      				return applyBinary(op, v1, v2);
+      		}
+      	}
+      		
+      	// &&, ||
+      	else if (op.BooleanOp()){
+      		// AND 연산은 bool 타입일 때만 진행
+      		if(!(v1.type() == Type.BOOL && v2.type() == Type.BOOL))
+      			throw new IllegalArgumentException("Attemped boolean op on " + v1.type() + ", not allowed");
+      		else {
+      			if(op.val.equals(Operator.AND))
+      				return new BoolValue(v1.boolValue() && v2.boolValue());
+      			else if(op.val.equals(Operator.OR))
+      				return new BoolValue(v1.boolValue() || v2.boolValue());
+      		}
+      	}
+      		
+      	// <, >, <=, >=, ==, !=
+      	else if(op.RelationalOp()){
+      		// int (<, >, <=, >=, ==, !=) int
+      		if (v1.type() == Type.INT && v1.type() == Type.INT) {
+      					if(op.val.equals(Operator.LT))
+      						return new BoolValue(v1.intValue() < v2.intValue());
+      					else if(op.val.equals(Operator.GT))
+      						return new BoolValue(v1.intValue() > v2.intValue());
+      					else if(op.val.equals(Operator.LE))
+      						return new BoolValue(v1.intValue() <= v2.intValue());
+      					else if(op.val.equals(Operator.GE))
+      						return new BoolValue(v1.intValue() >= v2.intValue());
+      					else if(op.val.equals(Operator.EQ))
+      						return new BoolValue(v1.intValue() == v2.intValue());
+      					else if(op.val.equals(Operator.NE))
+      						return new BoolValue(v1.intValue() != v2.intValue());
+      		}	
+      		// float (<, >, <=, >=, ==, !=) float
+      		else if(v1.type() == Type.FLOAT && v1.type() == Type.FLOAT){
+      					if(op.val.equals(Operator.LT))
+      						return new BoolValue(v1.floatValue() < v2.floatValue());
+      					else if(op.val.equals(Operator.GT))
+      						return new BoolValue(v1.floatValue() > v2.floatValue());
+      					else if(op.val.equals(Operator.LE))
+      						return new BoolValue(v1.floatValue() <= v2.floatValue());
+      					else if(op.val.equals(Operator.GE))
+      						return new BoolValue(v1.floatValue() >= v2.floatValue());
+      					else if(op.val.equals(Operator.EQ))
+      						return new BoolValue(v1.floatValue() == v2.floatValue());
+      					else if(op.val.equals(Operator.NE))
+      						return new BoolValue(v1.floatValue() != v2.floatValue());
+      		}
+      	    // 두 개의 타입이 다른 타입일때 캐스팅 후 다시 진행
+      		else if((v1.type() == Type.INT && v2.type() == Type.FLOAT) ||
+      						  (v1.type() == Type.FLOAT && v2.type() == Type.INT)) {
+      					if(v1.type() == Type.INT)
+      						v1 = new FloatValue((float)v1.intValue());
+      					else if(v2.type() == Type.INT)
+      						v2 = new FloatValue((float)v2.intValue());
+          				return applyBinary(op, v1, v2);
+      		}	
+      		// chars
+      		else if(v1.type() == Type.CHAR && v2.type() == Type.CHAR){
+      					if(op.val.equals(Operator.LT))
+      						return new BoolValue(v1.charValue() < v2.charValue());
+      					else if(op.val.equals(Operator.GT))
+      						return new BoolValue(v1.charValue() > v2.charValue());
+      					else if(op.val.equals(Operator.LE))
+      						return new BoolValue(v1.charValue() <= v2.charValue());
+      					else if(op.val.equals(Operator.GE))
+      						return new BoolValue(v1.charValue() >= v2.charValue());
+      					else if(op.val.equals(Operator.EQ))
+      						return new BoolValue(v1.charValue() == v2.charValue());
+      					else if(op.val.equals(Operator.NE))
+      						return new BoolValue(v1.charValue() != v2.charValue());
+      		}
+      				
+      		// bools can be compared with == and !=
+      		else if(v1.type() == Type.BOOL && v2.type() == Type.BOOL){
+      					if(op.val.equals(Operator.EQ))
+      						return new BoolValue(v1.boolValue() == v2.boolValue());
+      					else if(op.val.equals(Operator.NE))
+      						return new BoolValue(v1.boolValue() != v2.boolValue());
+      					else
+      						throw new IllegalArgumentException("Attempted illegal relational op " + op + " on two booleans (v1: " + v1 + " v2: " + v2 + ")");
+      		}
+      		else {
+      					throw new IllegalArgumentException("Attemped relational op on a " + v1.type() + " and a " + v2.type() + ", not allowed (v1: " + v1 + " v2: " + v2 + ")");
+      		}
+      	}
         throw new IllegalArgumentException("should never reach here");
     } 
     
@@ -192,153 +237,54 @@ public class Interpreter {
         // Unary = UnaryOp op; Expression term
         SemanticAnalyzer.check( ! v.isUndef( ) ,
                 "reference to undef value");
-        if (op.val.equals(Operator.NOT))
-            return new BoolValue(!v.boolValue( ));
-        else if (op.val.equals(Operator.INT_NEG))
-            return new IntValue(-v.intValue( ));
-        else if (op.val.equals(Operator.FLOAT_NEG))
-            return new FloatValue(-v.floatValue( ));
-        else if (op.val.equals(Operator.I2F))
-            return new FloatValue((float)(v.intValue( ))); 
-        else if (op.val.equals(Operator.F2I))
-            return new IntValue((int)(v.floatValue( )));
-        else if (op.val.equals(Operator.C2I))
-            return new IntValue((int)(v.charValue( )));
-        else if (op.val.equals(Operator.I2C))
-            return new CharValue((char)(v.intValue( )));
-        throw new IllegalArgumentException("should never reach here");
         
         
-        
-        
-        
-        
-        
-		Operator op = b.operator();
-		// interpret the operator's terms
-		Value v1 = interpret(b.term1(), funcs, state);
-		Value v2 = interpret(b.term2(), funcs, state);
-		
-		//+, -, *, /
-		if (op.isArithmeticOp()) {
-			if (v1.type() == Type.INT && v1.type() == Type.INT) {
-				if (op.val.equals(Operator.PLUS))
-					return new IntValue(v1.intValue() + v2.intValue());
-				if (op.val.equals(Operator.MINUS))
-					return new IntValue(v1.intValue() - v2.intValue());
-				if (op.val.equals(Operator.TIMES))
-					return new IntValue(v1.intValue() * v2.intValue());
-				if (op.val.equals(Operator.DIV))
-					return new IntValue(v1.intValue() / v2.intValue());
-				
-			// float (+, -, *,/) float 
-			} else if(v1.type() == Type.FLOAT && v2.type() == Type.FLOAT) {
-				if (op.val.equals(Operator.PLUS))
-					return new FloatValue(v1.floatValue() + v2.floatValue());
-				if (op.val.equals(Operator.MINUS))
-					return new FloatValue(v1.floatValue() - v2.floatValue());
-				if (op.val.equals(Operator.TIMES))
-					return new FloatValue(v1.floatValue() * v2.floatValue());
-				if (op.val.equals(Operator.DIV))
-					return new FloatValue(v1.floatValue() / v2.floatValue());
-				
-			// if attempting op on int and float, cast int to float and do it again
-			} else if((v1.type() == Type.INT && v2.type() == Type.FLOAT) ||
-					  (v1.type() == Type.FLOAT && v2.type() == Type.INT)) {
-				if(v1.type() == Type.INT)
-					v1 = new FloatValue((float)v1.intValue());
-				else if(v2.type() == Type.INT)
-					v2 = new FloatValue((float)v2.intValue());
-				return interpret(new Binary(op, v1, v2), funcs, state);
-			} else {
-				throw new IllegalArgumentException("Attemped arithmetic op on a " + v1.type() + " and a " + v2.type() + ", not allowed (v1: " + v1 + " v2: " + v2 + ")");
-			}
-			
-		// &&, ||
-		} else if (op.isBooleanOp()){
-			// boolean op and only be performed on booleans
-			if(!(v1.type() == Type.BOOL && v1.type() == Type.BOOL))
-				throw new IllegalArgumentException("Attemped boolean op on " + v1.type() + ", not allowed");
-			else {
-				if(op.val.equals(Operator.AND))
-					return new BoolValue(v1.boolValue() && v2.boolValue());
-				else if(op.val.equals(Operator.OR))
-					return new BoolValue(v1.boolValue() || v2.boolValue());
-			}
-			
-		// <, >, <=, >=, ==, !=
-		} else if(op.isRelationalOp()){
-			// int (<, >, <=, >=, ==, !=) int
-			if (v1.type() == Type.INT && v1.type() == Type.INT) {
-				if(op.val.equals(Operator.LT))
-					return new BoolValue(v1.intValue() < v2.intValue());
-				else if(op.val.equals(Operator.GT))
-					return new BoolValue(v1.intValue() > v2.intValue());
-				else if(op.val.equals(Operator.LE))
-					return new BoolValue(v1.intValue() <= v2.intValue());
-				else if(op.val.equals(Operator.GE))
-					return new BoolValue(v1.intValue() >= v2.intValue());
-				else if(op.val.equals(Operator.EQ))
-					return new BoolValue(v1.intValue() == v2.intValue());
-				else if(op.val.equals(Operator.NE))
-					return new BoolValue(v1.intValue() != v2.intValue());
-				
-			// float (<, >, <=, >=, ==, !=) float
-			} else if(v1.type() == Type.FLOAT && v1.type() == Type.FLOAT){
-				if(op.val.equals(Operator.LT))
-					return new BoolValue(v1.floatValue() < v2.floatValue());
-				else if(op.val.equals(Operator.GT))
-					return new BoolValue(v1.floatValue() > v2.floatValue());
-				else if(op.val.equals(Operator.LE))
-					return new BoolValue(v1.floatValue() <= v2.floatValue());
-				else if(op.val.equals(Operator.GE))
-					return new BoolValue(v1.floatValue() >= v2.floatValue());
-				else if(op.val.equals(Operator.EQ))
-					return new BoolValue(v1.floatValue() == v2.floatValue());
-				else if(op.val.equals(Operator.NE))
-					return new BoolValue(v1.floatValue() != v2.floatValue());
-				
-			// if attempting op on int and float, cast int to float and do it again
-			} else if((v1.type() == Type.INT && v2.type() == Type.FLOAT) ||
-					  (v1.type() == Type.FLOAT && v2.type() == Type.INT)) {
-				if(v1.type() == Type.INT)
-					v1 = new FloatValue((float)v1.intValue());
-				else if(v2.type() == Type.INT)
-					v2 = new FloatValue((float)v2.intValue());
-				return interpret(new Binary(op, v1, v2), funcs, state);
-				
-			// chars
-			} else if(v1.type() == Type.CHAR && v2.type() == Type.CHAR){
-				if(op.val.equals(Operator.LT))
-					return new BoolValue(v1.charValue() < v2.charValue());
-				else if(op.val.equals(Operator.GT))
-					return new BoolValue(v1.charValue() > v2.charValue());
-				else if(op.val.equals(Operator.LE))
-					return new BoolValue(v1.charValue() <= v2.charValue());
-				else if(op.val.equals(Operator.GE))
-					return new BoolValue(v1.charValue() >= v2.charValue());
-				else if(op.val.equals(Operator.EQ))
-					return new BoolValue(v1.charValue() == v2.charValue());
-				else if(op.val.equals(Operator.NE))
-					return new BoolValue(v1.charValue() != v2.charValue());
-			}
-			
-			// bools can be compared with == and !=
-			else if(v1.type() == Type.BOOL && v2.type() == Type.BOOL){
-				if(op.val.equals(Operator.EQ))
-					return new BoolValue(v1.boolValue() == v2.boolValue());
-				else if(op.val.equals(Operator.NE))
-					return new BoolValue(v1.boolValue() != v2.boolValue());
-				else
-					throw new IllegalArgumentException("Attempted illegal relational op " + op + " on two booleans (v1: " + v1 + " v2: " + v2 + ")");
-			}
-			
-			else {
-				throw new IllegalArgumentException("Attemped relational op on a " + v1.type() + " and a " + v2.type() + ", not allowed (v1: " + v1 + " v2: " + v2 + ")");
-			}
+		// boolean not
+		if (op.val.equals(Operator.NOT)){
+			if(v.type() != Type.BOOL)
+				throw new IllegalArgumentException("Can only apply ! operator to bool (attempted on " + v + ")");
+			else
+				return new BoolValue(!v.boolValue());
 		}
-		throw new IllegalArgumentException("should never reach here (in DynamicTyping.applyBinary)");
-	}
+
+		// negate
+		else if(op.val.equals(Operator.NEG)){
+			if(v.type() == Type.FLOAT)
+				return new FloatValue(-v.floatValue());
+			else if(v.type() == Type.INT)
+				return new IntValue(-v.intValue());
+			else
+				throw new IllegalArgumentException("Can only apply - operator to int or float (attempted on " + v + ")");
+		}
+		
+		// float cast
+		else if (op.val.equals(Operator.FLOAT)){
+			if(v.type() != Type.INT)
+				throw new IllegalArgumentException("Can only cast int to float (tried to cast " + v + ")");
+			else
+				return new FloatValue((float)v.intValue());
+		}
+		
+		// int cast
+		else if (op.val.equals(Operator.INT)){
+			if(v.type() == Type.FLOAT)
+				return new IntValue((int)v.floatValue());
+			else if(v.type() == Type.CHAR)
+				return new IntValue((int)v.charValue());
+			else
+				throw new IllegalArgumentException("Can only cast float or char to int (tried to cast " + v + ")");
+		}
+		
+		
+		// char cast
+		else if(op.val.equals(Operator.CHAR)){
+			if(v.type() == Type.INT)
+				return new CharValue((char)v.intValue());
+			else
+				throw new IllegalArgumentException("Can only cast int to char (tried to cast " + v + ")");
+		}
+       
+        throw new IllegalArgumentException("should never reach here");
     } 
     
 
