@@ -5,10 +5,14 @@ public class SymbolTable extends HashMap<Variable, Type> {
 // SymbolTable is implemented as a Java HashMap.  
 // Plus a 'display' method to facilitate experimentation.
 	
+	public SymbolTable() {
+		super();
+	}
 
-	// add code here
-	
-	
+	public SymbolTable(Variable variable, Type t) {
+		super();
+		this.put(variable, t);
+	}
 	
 	void display() {
 		// print the SymbolTable

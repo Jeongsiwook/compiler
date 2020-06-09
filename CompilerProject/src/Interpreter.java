@@ -1,4 +1,4 @@
-
+// CLite Interpreter
 
 public class Interpreter {
 
@@ -36,7 +36,7 @@ public class Interpreter {
   
     State M (Block b, State state) {
         // Block = Statements
-        // b占쎈뮉 占쎈퉸占쎈룴筌랃옙
+        // b는 해쉬맵
         for (Statement s : b.members)
             state = M (s, state);
         return state;
@@ -53,7 +53,7 @@ public class Interpreter {
     State M (Loop l, State state) {
         // Loop = Expression test; Statement body
         if (M (l.test, state).boolValue( ))
-        // �뙴�뫂遊� 占쎈꽰�⑥눘�뻻 占쎈뼄占쎈뻻 占쎈즼�뵳占�
+        // 루프 통과시 다시 돌림
             return M(l, M (l.body, state));
         else return state;
     }
@@ -79,9 +79,9 @@ public class Interpreter {
 
     Value applyBinary (Operator op, Value v1, Value v2) {
         // Binary = BinaryOp op; Expression term1, term2
-        // Operator占쎈퓠 占쎌뿳占쎈뮉 �겫占썽겫占� 占쎈뼄占쎈뻬
+        // Operator에 있는 부분 실행
 
-        // INT 占쎄텢燁살늿肉곤옙沅�
+        // INT 사칙연산
         if (op.val.equals(Operator.INT_PLUS)) 
             return new IntValue(v1.intValue( ) + v2.intValue( ));
         if (op.val.equals(Operator.INT_MINUS)) 
@@ -91,7 +91,7 @@ public class Interpreter {
         if (op.val.equals(Operator.INT_DIV)) 
             return new IntValue(v1.intValue( ) / v2.intValue( ));
         
-        // FLOAT 占쎄텢燁살늿肉곤옙沅�
+        // FLOAT 사칙연산
         if (op.val.equals(Operator.FLOAT_PLUS)) 
             return new FloatValue(v1.floatValue( ) + v2.floatValue( ));
         if (op.val.equals(Operator.FLOAT_MINUS)) 
@@ -101,7 +101,7 @@ public class Interpreter {
         if (op.val.equals(Operator.FLOAT_DIV)) 
             return new FloatValue(v1.floatValue( ) / v2.floatValue( ));
         
-        // INT �뜮袁㏉꺍占쎈염占쎄텦
+        // INT 비교연산
         if (op.val.equals(Operator.INT_LT))
             return new BoolValue(v1.intValue( ) < v2.intValue( ));
         if (op.val.equals(Operator.INT_LE))
@@ -115,7 +115,7 @@ public class Interpreter {
         if (op.val.equals(Operator.INT_GE))
             return new BoolValue(v1.intValue( ) >= v2.intValue( ));
 
-        // FLOAT �뜮袁㏉꺍占쎈염占쎄텦
+        // FLOAT 비교연산
         if (op.val.equals(Operator.FLOAT_LT))
             return new BoolValue(v1.floatValue( ) <  v2.floatValue( ));
         if (op.val.equals(Operator.FLOAT_LE))
@@ -129,7 +129,7 @@ public class Interpreter {
         if (op.val.equals(Operator.FLOAT_GE))
             return new BoolValue(v1.floatValue( ) >= v2.floatValue( ));
 
-        // CHAR �뜮袁㏉꺍占쎈염占쎄텦
+        // CHAR 비교연산
         if (op.val.equals(Operator.CHAR_LT))
             return new BoolValue(v1.charValue( ) <  v2.charValue( ));
         if (op.val.equals(Operator.CHAR_LE))
@@ -143,7 +143,7 @@ public class Interpreter {
         if (op.val.equals(Operator.CHAR_GE))
             return new BoolValue(v1.charValue( ) >= v2.charValue( ));
 
-        // BOOL �뜮袁㏉꺍占쎈염占쎄텦
+        // BOOL 비교연산
         if (op.val.equals(Operator.BOOL_EQ))
             return new BoolValue(v1.boolValue( ) == v2.boolValue( ));
         if (op.val.equals(Operator.BOOL_NE))
