@@ -205,7 +205,7 @@ public class SemanticAnalyzer {
             	} else if (ttype == Type.FLOAT) {
             		return;
             	} else {
-            		check(false, "type error for print if: " + p.v);
+            		check(false, "type error for print if: " + p.e);
             	}        		
         	} else {
         		check(false, "type error");

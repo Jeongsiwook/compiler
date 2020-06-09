@@ -6,5 +6,7 @@ int main ( ) {
     x=5;
     y=6;
     a = 5 + 3;
+    print a;
+    print 'c';
 
 }
