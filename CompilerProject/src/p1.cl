@@ -9,6 +9,7 @@ int main() {
 	lower = 1;
 	upper = 100;
 	prime = false;
+	
 	print lower;
 			
 	n = lower;

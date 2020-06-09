@@ -160,12 +160,23 @@ class Loop extends Statement {
 }
 
 
-abstract class Print extends Statement{
+abstract class Print extends Statement {
+	
 	public DefaultMutableTreeNode makeNode() {
-		DefaultMutableTreeNode newNode = new DefaultMutableTreeNode();
+		DefaultMutableTreeNode newNode = new DefaultMutableTreeNode("Print : ");
 		return newNode;
 	}
 }
+/*
+abstract class Statement {
+    // Statement = Skip | Block | Assignment | Conditional | Loop
+	public DefaultMutableTreeNode makeNode() {
+		DefaultMutableTreeNode newNode = new DefaultMutableTreeNode("Statement: ");
+		return newNode;
+	}
+}
+
+*/
 
 class PrintInt extends Print{
 	// PrintInt = IntValue
@@ -174,6 +185,23 @@ class PrintInt extends Print{
 	PrintInt (Value t){
 		t = v;
 	}
+	
+	public String toString( ) {       
+        return "" + v;
+    }
+	 
+	 public DefaultMutableTreeNode makeNode() {
+			DefaultMutableTreeNode PrintIntNode = new DefaultMutableTreeNode("PrintInt: " + v);
+			return PrintIntNode;
+		}
+	 /*
+	  *  DefaultMutableTreeNode node = new DefaultMutableTreeNode("Block : ");
+	public DefaultMutableTreeNode makeNode() {
+		for (Statement member : members) {
+			node.add(member.makeNode());
+		}
+		return node;
+	}*/
 }
 
 class PrintFloat extends Print{
@@ -183,6 +211,14 @@ class PrintFloat extends Print{
 	PrintFloat (Value t){
 		t = v;
 	}
+	public String toString( ) {       
+        return "" + v;
+    }
+	 
+	 public DefaultMutableTreeNode makeNode() {
+			DefaultMutableTreeNode PrintFloatNode = new DefaultMutableTreeNode("PrintFloat: " + v);
+			return PrintFloatNode;
+		}
 }
 
 class PrintCh extends Print{
@@ -191,7 +227,15 @@ class PrintCh extends Print{
 	
 	PrintCh (Value t){
 		t = v;
-	}
+		}
+	public String toString( ) {
+		return "" + v;
+		}
+	DefaultMutableTreeNode PrintChNode = new DefaultMutableTreeNode("PrintCh: ");
+	 public DefaultMutableTreeNode makeNode() {
+			PrintChNode.add(v.makeNode());
+			return PrintChNode;
+		}
 }
 
 class PrintVar extends Print{
@@ -201,6 +245,13 @@ class PrintVar extends Print{
 	PrintVar (Variable t){
 		t = v;
 	}
+	
+	DefaultMutableTreeNode PrintVarNode = new DefaultMutableTreeNode("PrintVar: ");
+	 public DefaultMutableTreeNode makeNode() {
+		 PrintVarNode.add(v.makeNode());
+			return PrintVarNode;
+		}
+
 
 }
 
