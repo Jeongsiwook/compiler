@@ -239,16 +239,16 @@ class PrintCh extends Print{
 }
 
 class PrintVar extends Print{
-	// PrintVar = Variable
-	Variable v;
+	// PrintVar = Expression
+	Expression e;
 	
 	PrintVar (Variable t){
-		v = t;
+		e = t;
 	}
 	
 	DefaultMutableTreeNode PrintVarNode = new DefaultMutableTreeNode("PrintVar: ");
 	 public DefaultMutableTreeNode makeNode() {
-		 PrintVarNode.add(v.makeNode());
+		 PrintVarNode.add(e.makeNode());
 			return PrintVarNode;
 		}
 
