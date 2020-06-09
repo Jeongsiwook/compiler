@@ -183,7 +183,7 @@ class PrintInt extends Print{
 	IntValue v;
 	
 	PrintInt (Value t){
-		t = v;
+		v = (IntValue)t;
 	}
 	
 	public String toString( ) {       
@@ -209,7 +209,7 @@ class PrintFloat extends Print{
 	FloatValue v;
 	
 	PrintFloat (Value t){
-		t = v;
+		v = (FloatValue)t;
 	}
 	public String toString( ) {       
         return "" + v;
@@ -226,7 +226,7 @@ class PrintCh extends Print{
 	CharValue v;
 	
 	PrintCh (Value t){
-		t = v;
+		v = (CharValue)t;
 		}
 	public String toString( ) {
 		return "" + v;
@@ -243,7 +243,7 @@ class PrintVar extends Print{
 	Variable v;
 	
 	PrintVar (Variable t){
-		t = v;
+		v = t;
 	}
 	
 	DefaultMutableTreeNode PrintVarNode = new DefaultMutableTreeNode("PrintVar: ");
