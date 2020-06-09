@@ -86,9 +86,26 @@ public class Lexer {
                 char ch1 = nextChar();
                 if (ch1 == '\\') {
                 	char ch2 = nextChar();
-                	nextChar();
-                	ch = nextChar();
-                	return Token.mkCharLiteral("" + ch1 + ch2);
+                	if (ch2 == 'n') {
+                		nextChar();
+                		ch = nextChar();
+                		return Token.mkCharLiteral("" + eolnCh);
+                	} else if (ch2 == 't') {
+                		nextChar();
+                		ch = nextChar();
+                		return Token.mkCharLiteral("" + eotCh);
+                	} else if (ch2 == 'r') {
+                		nextChar();
+                		ch = nextChar();
+                		return Token.mkCharLiteral("" + eorCh);
+                	} else if (ch2 == '\'') {
+                		nextChar();
+                    	ch = nextChar();
+                    	return Token.mkCharLiteral("" + ch2);                		
+                	} else {
+                		error("Illegal character " + ch1 + ch2);
+                	}
+                	
                 }
                 nextChar(); // get '
                 ch = nextChar();
