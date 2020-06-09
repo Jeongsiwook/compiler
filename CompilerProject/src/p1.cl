@@ -9,7 +9,10 @@ int main() {
 	lower = 1;
 	upper = 100;
 	prime = false;
-	
+	print 'hello';
+	print 123;
+	print 1.23;
+	print prime;
 	print lower;
 			
 	n = lower;

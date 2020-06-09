@@ -167,16 +167,6 @@ abstract class Print extends Statement {
 		return newNode;
 	}
 }
-/*
-abstract class Statement {
-    // Statement = Skip | Block | Assignment | Conditional | Loop
-	public DefaultMutableTreeNode makeNode() {
-		DefaultMutableTreeNode newNode = new DefaultMutableTreeNode("Statement: ");
-		return newNode;
-	}
-}
-
-*/
 
 class PrintInt extends Print{
 	// PrintInt = IntValue
@@ -186,22 +176,12 @@ class PrintInt extends Print{
 		v = (IntValue)t;
 	}
 	
-	public String toString( ) {       
-        return "" + v;
-    }
-	 
+	DefaultMutableTreeNode PrintIntNode = new DefaultMutableTreeNode("PrintInt: ");
 	 public DefaultMutableTreeNode makeNode() {
-			DefaultMutableTreeNode PrintIntNode = new DefaultMutableTreeNode("PrintInt: " + v);
+			PrintIntNode.add(v.makeNode());
 			return PrintIntNode;
 		}
-	 /*
-	  *  DefaultMutableTreeNode node = new DefaultMutableTreeNode("Block : ");
-	public DefaultMutableTreeNode makeNode() {
-		for (Statement member : members) {
-			node.add(member.makeNode());
-		}
-		return node;
-	}*/
+
 }
 
 class PrintFloat extends Print{
@@ -211,12 +191,10 @@ class PrintFloat extends Print{
 	PrintFloat (Value t){
 		v = (FloatValue)t;
 	}
-	public String toString( ) {       
-        return "" + v;
-    }
-	 
+
+	DefaultMutableTreeNode PrintFloatNode = new DefaultMutableTreeNode("PrintFloat: ");
 	 public DefaultMutableTreeNode makeNode() {
-			DefaultMutableTreeNode PrintFloatNode = new DefaultMutableTreeNode("PrintFloat: " + v);
+			PrintFloatNode.add(v.makeNode());
 			return PrintFloatNode;
 		}
 }
@@ -228,9 +206,7 @@ class PrintCh extends Print{
 	PrintCh (Value t){
 		v = (CharValue)t;
 		}
-	public String toString( ) {
-		return "" + v;
-		}
+
 	DefaultMutableTreeNode PrintChNode = new DefaultMutableTreeNode("PrintCh: ");
 	 public DefaultMutableTreeNode makeNode() {
 			PrintChNode.add(v.makeNode());
