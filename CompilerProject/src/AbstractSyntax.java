@@ -180,7 +180,7 @@ abstract class Statement {
 
 class PrintInt extends Print{
 	// PrintInt = IntValue
-	private IntValue v;
+	IntValue v;
 	
 	PrintInt (Value t){
 		t = v;
@@ -206,7 +206,7 @@ class PrintInt extends Print{
 
 class PrintFloat extends Print{
 	// PrintFloat = FloatValue
-	private FloatValue v;
+	FloatValue v;
 	
 	PrintFloat (Value t){
 		t = v;
@@ -223,7 +223,7 @@ class PrintFloat extends Print{
 
 class PrintCh extends Print{
 	// PrintCh = CharValue
-	private CharValue v;
+	CharValue v;
 	
 	PrintCh (Value t){
 		t = v;
@@ -240,7 +240,7 @@ class PrintCh extends Print{
 
 class PrintVar extends Print{
 	// PrintVar = Variable
-	private Variable v;
+	Variable v;
 	
 	PrintVar (Variable t){
 		t = v;
