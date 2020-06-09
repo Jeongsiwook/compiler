@@ -12,6 +12,8 @@ public class Lexer {
     private final String digits = "0123456789";
     private final char eolnCh = '\n';
     private final char eofCh = '\004';
+    private final char eotCh = '\t';
+    private final char eorCh = '\r';
 
     public Lexer (String fileName) { // source filename
         try {
@@ -82,6 +84,12 @@ public class Lexer {
                 
             case '\'':  // char literal
                 char ch1 = nextChar();
+                if (ch1 == '\\') {
+                	char ch2 = nextChar();
+                	nextChar();
+                	ch = nextChar();
+                	return Token.mkCharLiteral("" + ch1 + ch2);
+                }
                 nextChar(); // get '
                 ch = nextChar();
                 return Token.mkCharLiteral("" + ch1);
