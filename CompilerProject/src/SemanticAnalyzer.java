@@ -198,8 +198,8 @@ public class SemanticAnalyzer {
         	}
         	else if (s instanceof PrintVar) {
         		PrintVar p = (PrintVar) s;
-        		V(p.v, tm);
-        		Type ttype = typeOf(p.v, tm);
+        		V(p.e, tm);
+        		Type ttype = typeOf(p.e, tm);
             	if (ttype == Type.INT) {
             		return;
             	} else if (ttype == Type.FLOAT) {
