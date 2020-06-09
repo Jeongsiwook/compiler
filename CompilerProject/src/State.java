@@ -3,8 +3,6 @@ import java.util.*;
 
 
 // State
-// Change made here
-// jhjhjhjhjhjhjh
 public class State extends HashMap<Variable, Value> {
 	public State() {
 		super();
@@ -20,11 +18,11 @@ public class State extends HashMap<Variable, Value> {
 		return this;
 	}
 
-	public State onion(State other) {
-		for (Variable key : other.keySet())
-			put(key, other.get(key));
-		return this;
-	}
+    public State onion (State t) {
+        for (Variable key : t.keySet( ))
+            put(key, t.get(key));
+        return this;
+    }
 	
 	public void display(){
 		for(Variable v : this.keySet())

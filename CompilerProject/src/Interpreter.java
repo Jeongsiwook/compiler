@@ -83,44 +83,36 @@ public class Interpreter {
     
     State M (Print p, State state) {
     	if (p instanceof PrintInt) {
-    		return M((PrintInt)p, state);
+    		PrintInt i = (PrintInt)p;
+    		System.out.println(i.v);
+        	return state; 
     	}
     	if (p instanceof PrintFloat) {
-    		return M((PrintFloat)p, state);
+    		PrintFloat f = (PrintFloat)p;
+    		System.out.println(f.v);
+        	return state; 
     	}
     	if (p instanceof PrintCh) {
-    		return M((PrintCh)p, state);
+    		PrintCh c = (PrintCh)p;
+    		System.out.println(c.v);
+        	return state; 
     	}
     	if (p instanceof PrintVar) {
-    		return M((PrintVar)p, state);
+    		PrintVar var = (PrintVar)p;
+    		System.out.println(state.get(var.v));
+        	return state; 
     	}
         throw new IllegalArgumentException("should never reach here");
     }
     
     
-    State M (PrintInt p, State state) {
-    	System.out.println(p.v);
-    	return state; 
-    }
-    
-    State M (PrintFloat p, State state) {
-    	System.out.println(p.v);
-    	return state; 
-    }
-    
-    State M (PrintCh p, State state) {
-    	System.out.println(p.v);
-    	return state; 
-    }
-    
-    State M (PrintVar p, State state) {
-    	System.out.println(state.get(p.v));
-    	return state; 
-    }
 
     Value applyBinary (Operator op, Value v1, Value v2) {
         // Binary = BinaryOp op; Expression term1, term2
         // Operator에 있는 부분 실행
+    	
+        SemanticAnalyzer.check( ! v1.isUndef( ) && ! v2.isUndef( ),
+                "reference to undef value");
 
         // INT 사칙연산
         if (op.val.equals(Operator.INT_PLUS)) 
@@ -198,7 +190,8 @@ public class Interpreter {
     
     Value applyUnary (Operator op, Value v) {
         // Unary = UnaryOp op; Expression term
-
+        SemanticAnalyzer.check( ! v.isUndef( ) ,
+                "reference to undef value");
         if (op.val.equals(Operator.NOT))
             return new BoolValue(!v.boolValue( ));
         else if (op.val.equals(Operator.INT_NEG))
@@ -214,6 +207,138 @@ public class Interpreter {
         else if (op.val.equals(Operator.I2C))
             return new CharValue((char)(v.intValue( )));
         throw new IllegalArgumentException("should never reach here");
+        
+        
+        
+        
+        
+        
+        
+		Operator op = b.operator();
+		// interpret the operator's terms
+		Value v1 = interpret(b.term1(), funcs, state);
+		Value v2 = interpret(b.term2(), funcs, state);
+		
+		//+, -, *, /
+		if (op.isArithmeticOp()) {
+			if (v1.type() == Type.INT && v1.type() == Type.INT) {
+				if (op.val.equals(Operator.PLUS))
+					return new IntValue(v1.intValue() + v2.intValue());
+				if (op.val.equals(Operator.MINUS))
+					return new IntValue(v1.intValue() - v2.intValue());
+				if (op.val.equals(Operator.TIMES))
+					return new IntValue(v1.intValue() * v2.intValue());
+				if (op.val.equals(Operator.DIV))
+					return new IntValue(v1.intValue() / v2.intValue());
+				
+			// float (+, -, *,/) float 
+			} else if(v1.type() == Type.FLOAT && v2.type() == Type.FLOAT) {
+				if (op.val.equals(Operator.PLUS))
+					return new FloatValue(v1.floatValue() + v2.floatValue());
+				if (op.val.equals(Operator.MINUS))
+					return new FloatValue(v1.floatValue() - v2.floatValue());
+				if (op.val.equals(Operator.TIMES))
+					return new FloatValue(v1.floatValue() * v2.floatValue());
+				if (op.val.equals(Operator.DIV))
+					return new FloatValue(v1.floatValue() / v2.floatValue());
+				
+			// if attempting op on int and float, cast int to float and do it again
+			} else if((v1.type() == Type.INT && v2.type() == Type.FLOAT) ||
+					  (v1.type() == Type.FLOAT && v2.type() == Type.INT)) {
+				if(v1.type() == Type.INT)
+					v1 = new FloatValue((float)v1.intValue());
+				else if(v2.type() == Type.INT)
+					v2 = new FloatValue((float)v2.intValue());
+				return interpret(new Binary(op, v1, v2), funcs, state);
+			} else {
+				throw new IllegalArgumentException("Attemped arithmetic op on a " + v1.type() + " and a " + v2.type() + ", not allowed (v1: " + v1 + " v2: " + v2 + ")");
+			}
+			
+		// &&, ||
+		} else if (op.isBooleanOp()){
+			// boolean op and only be performed on booleans
+			if(!(v1.type() == Type.BOOL && v1.type() == Type.BOOL))
+				throw new IllegalArgumentException("Attemped boolean op on " + v1.type() + ", not allowed");
+			else {
+				if(op.val.equals(Operator.AND))
+					return new BoolValue(v1.boolValue() && v2.boolValue());
+				else if(op.val.equals(Operator.OR))
+					return new BoolValue(v1.boolValue() || v2.boolValue());
+			}
+			
+		// <, >, <=, >=, ==, !=
+		} else if(op.isRelationalOp()){
+			// int (<, >, <=, >=, ==, !=) int
+			if (v1.type() == Type.INT && v1.type() == Type.INT) {
+				if(op.val.equals(Operator.LT))
+					return new BoolValue(v1.intValue() < v2.intValue());
+				else if(op.val.equals(Operator.GT))
+					return new BoolValue(v1.intValue() > v2.intValue());
+				else if(op.val.equals(Operator.LE))
+					return new BoolValue(v1.intValue() <= v2.intValue());
+				else if(op.val.equals(Operator.GE))
+					return new BoolValue(v1.intValue() >= v2.intValue());
+				else if(op.val.equals(Operator.EQ))
+					return new BoolValue(v1.intValue() == v2.intValue());
+				else if(op.val.equals(Operator.NE))
+					return new BoolValue(v1.intValue() != v2.intValue());
+				
+			// float (<, >, <=, >=, ==, !=) float
+			} else if(v1.type() == Type.FLOAT && v1.type() == Type.FLOAT){
+				if(op.val.equals(Operator.LT))
+					return new BoolValue(v1.floatValue() < v2.floatValue());
+				else if(op.val.equals(Operator.GT))
+					return new BoolValue(v1.floatValue() > v2.floatValue());
+				else if(op.val.equals(Operator.LE))
+					return new BoolValue(v1.floatValue() <= v2.floatValue());
+				else if(op.val.equals(Operator.GE))
+					return new BoolValue(v1.floatValue() >= v2.floatValue());
+				else if(op.val.equals(Operator.EQ))
+					return new BoolValue(v1.floatValue() == v2.floatValue());
+				else if(op.val.equals(Operator.NE))
+					return new BoolValue(v1.floatValue() != v2.floatValue());
+				
+			// if attempting op on int and float, cast int to float and do it again
+			} else if((v1.type() == Type.INT && v2.type() == Type.FLOAT) ||
+					  (v1.type() == Type.FLOAT && v2.type() == Type.INT)) {
+				if(v1.type() == Type.INT)
+					v1 = new FloatValue((float)v1.intValue());
+				else if(v2.type() == Type.INT)
+					v2 = new FloatValue((float)v2.intValue());
+				return interpret(new Binary(op, v1, v2), funcs, state);
+				
+			// chars
+			} else if(v1.type() == Type.CHAR && v2.type() == Type.CHAR){
+				if(op.val.equals(Operator.LT))
+					return new BoolValue(v1.charValue() < v2.charValue());
+				else if(op.val.equals(Operator.GT))
+					return new BoolValue(v1.charValue() > v2.charValue());
+				else if(op.val.equals(Operator.LE))
+					return new BoolValue(v1.charValue() <= v2.charValue());
+				else if(op.val.equals(Operator.GE))
+					return new BoolValue(v1.charValue() >= v2.charValue());
+				else if(op.val.equals(Operator.EQ))
+					return new BoolValue(v1.charValue() == v2.charValue());
+				else if(op.val.equals(Operator.NE))
+					return new BoolValue(v1.charValue() != v2.charValue());
+			}
+			
+			// bools can be compared with == and !=
+			else if(v1.type() == Type.BOOL && v2.type() == Type.BOOL){
+				if(op.val.equals(Operator.EQ))
+					return new BoolValue(v1.boolValue() == v2.boolValue());
+				else if(op.val.equals(Operator.NE))
+					return new BoolValue(v1.boolValue() != v2.boolValue());
+				else
+					throw new IllegalArgumentException("Attempted illegal relational op " + op + " on two booleans (v1: " + v1 + " v2: " + v2 + ")");
+			}
+			
+			else {
+				throw new IllegalArgumentException("Attemped relational op on a " + v1.type() + " and a " + v2.type() + ", not allowed (v1: " + v1 + " v2: " + v2 + ")");
+			}
+		}
+		throw new IllegalArgumentException("should never reach here (in DynamicTyping.applyBinary)");
+	}
     } 
     
 
@@ -245,9 +370,8 @@ public class Interpreter {
         System.out.println("\nSemantic Analysis Ended");  
         
 
-        Interpreter semantics = new Interpreter( );
-        State state = semantics.M(prog);
-        //this.st = state;
+        Interpreter interpreter = new Interpreter( );
+        State state = interpreter.M(prog);
         System.out.println("Final State");
         state.display( );
     }

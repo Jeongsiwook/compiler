@@ -191,10 +191,12 @@ public class Parser {
         } else if (isLiteral()) {
         	Value v = null;
         	if (token.type().equals(TokenType.IntLiteral)) {
+        		v = new IntValue(Integer.parseInt(match(TokenType.IntLiteral)));
         		p = new PrintInt(v);
         		
         	}
         	else if (token.type().equals(TokenType.FloatLiteral)) {
+        		v = new FloatValue(Float.parseFloat(match(TokenType.FloatLiteral)));
         		p = new PrintFloat(v);
         	} 
         	else {
@@ -216,6 +218,7 @@ public class Parser {
         else if (isLiteral()) {
         	Value v = null;
         	if (token.type().equals(TokenType.CharLiteral)) {
+        		v = new CharValue(match(TokenType.CharLiteral).charAt(0));
         		p = new PrintCh(v);
         		
         	}
@@ -337,7 +340,7 @@ public class Parser {
     		v = new FloatValue(Float.parseFloat(match(TokenType.FloatLiteral)));
     	} 
     	else if (token.type().equals(TokenType.CharLiteral)) {
-    	v = new CharValue(match(TokenType.CharLiteral).charAt(0));
+    		v = new CharValue(match(TokenType.CharLiteral).charAt(0));
     	} 
     	else if (isBooleanLiteral( )) { 
     		if (token.type().equals(TokenType.True)) {
