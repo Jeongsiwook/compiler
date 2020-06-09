@@ -204,7 +204,10 @@ public class SemanticAnalyzer {
             		return;
             	} else if (ttype == Type.FLOAT) {
             		return;
-            	} else {
+            	} else if (ttype == Type.CHAR) {
+            		return;
+            	}
+            	else {
             		check(false, "type error for print if: " + p.e);
             	}        		
         	} else {
