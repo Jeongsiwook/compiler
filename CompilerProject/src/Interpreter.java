@@ -1,3 +1,7 @@
+import javax.swing.JFrame;
+import javax.swing.JScrollPane;
+import javax.swing.JTree;
+
 // CLite Interpreter
 
 public class Interpreter {
@@ -22,6 +26,7 @@ public class Interpreter {
         if (s instanceof Conditional)  return M((Conditional)s, state);
         if (s instanceof Loop)  return M((Loop)s, state);
         if (s instanceof Block)  return M((Block)s, state);
+        if (s instanceof Print) return M((Print)s, state);
         throw new IllegalArgumentException();
     }
   
@@ -73,9 +78,45 @@ public class Interpreter {
             Unary u = (Unary)e;
             return applyUnary(u.op, M(u.term, state));
         }
-        throw new IllegalArgumentException("");
+        throw new IllegalArgumentException("should never reach here");
     }
-}
+    
+    State M (Print p, State state) {
+    	if (p instanceof PrintInt) {
+    		return M((PrintInt)p, state);
+    	}
+    	if (p instanceof PrintFloat) {
+    		return M((PrintFloat)p, state);
+    	}
+    	if (p instanceof PrintCh) {
+    		return M((PrintCh)p, state);
+    	}
+    	if (p instanceof PrintVar) {
+    		return M((PrintVar)p, state);
+    	}
+        throw new IllegalArgumentException("should never reach here");
+    }
+    
+    
+    State M (PrintInt p, State state) {
+    	System.out.println(p.v);
+    	return state; 
+    }
+    
+    State M (PrintFloat p, State state) {
+    	System.out.println(p.v);
+    	return state; 
+    }
+    
+    State M (PrintCh p, State state) {
+    	System.out.println(p.v);
+    	return state; 
+    }
+    
+    State M (PrintVar p, State state) {
+    	System.out.println(state.get(p.v));
+    	return state; 
+    }
 
     Value applyBinary (Operator op, Value v1, Value v2) {
         // Binary = BinaryOp op; Expression term1, term2
@@ -152,7 +193,7 @@ public class Interpreter {
             return new BoolValue(v1.boolValue( ) && v2.boolValue( ));
         if (op.val.equals(Operator.OR))
             return new BoolValue(v1.boolValue( ) || v2.boolValue( ));
-        throw new IllegalArgumentException("");
+        throw new IllegalArgumentException("should never reach here");
     } 
     
     Value applyUnary (Operator op, Value v) {
@@ -172,7 +213,44 @@ public class Interpreter {
             return new IntValue((int)(v.charValue( )));
         else if (op.val.equals(Operator.I2C))
             return new CharValue((char)(v.intValue( )));
-        throw new IllegalArgumentException("");
+        throw new IllegalArgumentException("should never reach here");
     } 
+    
 
+
+    public static void main(String args[]) {
+        Parser parser  = new Parser(new Lexer(args[0]));
+        Program prog = parser.program();
+        
+        System.out.println("\nAbstract Syntax Tree...");  
+        JTree tree;
+    	JFrame frame = new JFrame();
+        tree = new JTree(prog.makeRoot());
+    	tree.setVisibleRowCount(10);
+    	
+    	JScrollPane treeScroll = new JScrollPane(tree);
+    	frame.add(treeScroll);
+    	
+    	frame.setTitle("Abstract Syntax Tree");
+    	frame.setSize(400, 500);
+    	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    	
+		frame.setVisible(true);
+		
+		
+
+        System.out.println("\nSemantic Analysis...");        
+        SemanticAnalyzer.V(prog); // 의미분석기
+   
+        System.out.println("\nSemantic Analysis Ended");  
+        
+
+        Interpreter semantics = new Interpreter( );
+        State state = semantics.M(prog);
+        //this.st = state;
+        System.out.println("Final State");
+        state.display( );
+    }
+    
+}
 
